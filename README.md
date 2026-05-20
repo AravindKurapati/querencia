@@ -83,4 +83,5 @@ Set `QUERENCIA_DB` to point the server at your database. Tools: `querencia_narra
 - **CLI** — `querencia ingest|enrich|embed|story|ask|taste`.
 - **MCP server** — `querencia.mcp_server`.
 
-See `SCHEMA.md` for the database design and `tests/MANUAL.md` for the manual verification script.
+See `ARCHITECTURE.md` for the full end-to-end pipeline and design, `SCHEMA.md` for the database
+design, and `tests/MANUAL.md` for the manual verification script.
