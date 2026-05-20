@@ -1,6 +1,6 @@
-from locus.db import connect, init_schema
-from locus.ingest._util import upsert_place
-from locus.mcp_server import _narrative_tool, _patterns_tool
+from querencia.db import connect, init_schema
+from querencia.ingest._util import upsert_place
+from querencia.mcp_server import _narrative_tool, _patterns_tool
 
 
 def test_narrative_tool_returns_dict(tmp_path):

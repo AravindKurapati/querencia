@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
-from locus.db import connect, init_schema
-from locus.ingest.photos import ingest_photo_sidecar
+from querencia.db import connect, init_schema
+from querencia.ingest.photos import ingest_photo_sidecar
 
 FIX = Path(__file__).parent.parent / "fixtures" / "photo_sidecar.json"
 

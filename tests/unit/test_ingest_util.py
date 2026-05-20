@@ -1,5 +1,5 @@
-from locus.ingest._util import geo_key, upsert_place
-from locus.db import connect, init_schema
+from querencia.ingest._util import geo_key, upsert_place
+from querencia.db import connect, init_schema
 
 
 def test_geo_key_rounds_to_5dp():

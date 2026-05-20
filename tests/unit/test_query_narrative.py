@@ -1,6 +1,6 @@
-from locus.db import connect, init_schema
-from locus.ingest._util import upsert_place
-from locus.query import narrative, patterns, taste
+from querencia.db import connect, init_schema
+from querencia.ingest._util import upsert_place
+from querencia.query import narrative, patterns, taste
 
 
 def _seed(conn):

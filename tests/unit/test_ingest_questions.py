@@ -1,5 +1,5 @@
-from locus.db import connect, init_schema
-from locus.ingest.questions import ingest_question
+from querencia.db import connect, init_schema
+from querencia.ingest.questions import ingest_question
 
 QA = {"placeUrl": "https://google.com/maps/?cid=0x3bae16a82da08f99:0x3ce7be42251d9745",
       "selectedChoice": "Yes", "question": "Is this dish shown? Sujuk"}

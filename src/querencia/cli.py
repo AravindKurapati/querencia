@@ -8,7 +8,7 @@ from .ingest import run_all
 
 
 @click.group()
-@click.option("--db", default="locus.db", help="Path to the SQLite database.")
+@click.option("--db", default="querencia.db", help="Path to the SQLite database.")
 @click.pass_context
 def cli(ctx, db):
     ctx.ensure_object(dict)

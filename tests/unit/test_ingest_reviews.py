@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
-from locus.db import connect, init_schema
-from locus.ingest.reviews import ingest_reviews
+from querencia.db import connect, init_schema
+from querencia.ingest.reviews import ingest_reviews
 
 FIX = Path(__file__).parent.parent / "fixtures" / "reviews.json"
 

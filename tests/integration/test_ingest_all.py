@@ -1,7 +1,7 @@
 import io, json, zipfile
 from pathlib import Path
-from locus.db import connect, init_schema
-from locus.ingest import run_all
+from querencia.db import connect, init_schema
+from querencia.ingest import run_all
 
 FIX = Path(__file__).parent.parent / "fixtures"
 

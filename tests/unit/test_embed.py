@@ -1,6 +1,6 @@
-from locus.db import connect, init_schema
-from locus.embed import render_place, build_index
-from locus.ingest._util import upsert_place
+from querencia.db import connect, init_schema
+from querencia.embed import render_place, build_index
+from querencia.ingest._util import upsert_place
 
 
 class FakeEmbedder:

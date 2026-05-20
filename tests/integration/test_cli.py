@@ -1,7 +1,7 @@
 import zipfile
 from pathlib import Path
 from click.testing import CliRunner
-from locus.cli import cli
+from querencia.cli import cli
 
 FIX = Path(__file__).parent.parent / "fixtures"
 

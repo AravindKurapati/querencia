@@ -1,4 +1,4 @@
-from locus.synth_llm import render_prose
+from querencia.synth_llm import render_prose
 
 
 class FakeAnthropic:

@@ -1,4 +1,4 @@
-from locus.models import Place, Review, Photo, Visit, Transition
+from querencia.models import Place, Review, Photo, Visit, Transition
 
 
 def test_place_defaults():

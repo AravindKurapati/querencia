@@ -1,6 +1,6 @@
-from locus.db import connect, init_schema
-from locus.enrich import enrich_places
-from locus.ingest._util import upsert_place
+from querencia.db import connect, init_schema
+from querencia.enrich import enrich_places
+from querencia.ingest._util import upsert_place
 
 
 class FakeClient:

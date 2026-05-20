@@ -1,6 +1,6 @@
-from locus.db import connect, init_schema
-from locus.ingest.labels import ingest_labels
-from locus.ingest.commutes import ingest_commutes
+from querencia.db import connect, init_schema
+from querencia.ingest.labels import ingest_labels
+from querencia.ingest.commutes import ingest_commutes
 
 LABELS = {"features": [
     {"geometry": {"coordinates": [77.6529267, 12.914492], "type": "Point"},

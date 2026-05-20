@@ -1,4 +1,4 @@
-# locus database schema
+# querencia database schema
 
 SQLite (+ `sqlite-vec`). All entities unify on `place_key` — `pid:<hex>` (Google place id),
 `cid:<hex>` (question/cid), `geo:<lat>,<lng>` (geocoded point), or `visit:<id>` (commute leg

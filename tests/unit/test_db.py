@@ -1,4 +1,4 @@
-from locus.db import connect, init_schema
+from querencia.db import connect, init_schema
 
 
 def test_schema_creates_all_tables(tmp_path):
