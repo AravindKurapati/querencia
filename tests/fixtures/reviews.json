@@ -1,0 +1,27 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "geometry": {"coordinates": [-74.0512857, 40.7435999], "type": "Point"},
+      "properties": {
+        "date": "2026-01-11T17:05:01.966536Z",
+        "five_star_rating_published": 5,
+        "google_maps_url": "https://www.google.com/maps/place//data=!1s0x0:0x49c924ef18940842",
+        "location": {"address": "249 Central Ave, Jersey City, NJ 07307, United States",
+                     "country_code": "US",
+                     "name": "Balaji Bhavan"},
+        "review_text_published": "Great dosa",
+        "questions": [{"question": "Meal type", "selected_option": "Breakfast"}]
+      }
+    },
+    {
+      "geometry": {"coordinates": [0, 0], "type": "Point"},
+      "properties": {
+        "date": "2020-01-01T00:00:00Z",
+        "five_star_rating_published": 3,
+        "google_maps_url": "https://www.google.com/maps/place//data=!1s0x0:0xNOLOC",
+        "Comment": "No location information is available for this review"
+      }
+    }
+  ]
+}
