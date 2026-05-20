@@ -30,7 +30,8 @@ def ingest_reviews(conn: sqlite3.Connection, data: dict) -> int:
         upsert_place(
             conn, key,
             lat=lat if lat else None, lng=lng if lng else None,
-            name=loc.get("name"), address=loc.get("address"),
+            name=loc.get("name"), category=props.get("category"),
+            address=loc.get("address"),
             country_code=loc.get("country_code"), source="review",
         )
         qa = props.get("questions")

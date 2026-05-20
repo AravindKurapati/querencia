@@ -15,6 +15,7 @@ def upsert_place(
     lat: float | None = None,
     lng: float | None = None,
     name: str | None = None,
+    category: str | None = None,
     address: str | None = None,
     country_code: str | None = None,
     source: str | None = None,
@@ -25,9 +26,9 @@ def upsert_place(
     if row is None:
         flags = {source} if source else set()
         conn.execute(
-            "INSERT INTO places(place_key, lat, lng, canonical_name, address, "
-            "country_code, source_flags) VALUES (?,?,?,?,?,?,?)",
-            (place_key, lat, lng, name, address, country_code,
+            "INSERT INTO places(place_key, lat, lng, canonical_name, category, address, "
+            "country_code, source_flags) VALUES (?,?,?,?,?,?,?,?)",
+            (place_key, lat, lng, name, category, address, country_code,
              ",".join(sorted(flags))),
         )
     else:
@@ -38,9 +39,10 @@ def upsert_place(
             "UPDATE places SET "
             "lat=COALESCE(lat,?), lng=COALESCE(lng,?), "
             "canonical_name=COALESCE(canonical_name,?), "
+            "category=COALESCE(category,?), "
             "address=COALESCE(address,?), country_code=COALESCE(country_code,?), "
             "source_flags=? WHERE place_key=?",
-            (lat, lng, name, address, country_code,
+            (lat, lng, name, category, address, country_code,
              ",".join(sorted(flags)), place_key),
         )
 
