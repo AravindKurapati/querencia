@@ -6,12 +6,7 @@ __pycache__/
 data/raw/
 *.db
 .env
-
-CLAUDE.md
-AGENTS.md
-
-web/node_modules/
-web/dist/
-web/public/data.json
-web/tsconfig.tsbuildinfo
-demo.zip
+# pyvis writes a vendored lib/ next to its HTML output; keep it out of the repo
+lib/
+*.html
+demo*.zip
