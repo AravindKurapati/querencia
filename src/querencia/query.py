@@ -113,3 +113,147 @@ def taste(conn: sqlite3.Connection, city: str) -> dict:
         "top_categories": [c[0] for c in cats],
         "avg_rating": round(avg, 2),
     }
+
+
+def summary(conn: sqlite3.Connection) -> dict:
+    place_count = conn.execute(
+        "SELECT COUNT(*) FROM places WHERE place_key IN (SELECT place_key FROM reviews)"
+    ).fetchone()[0]
+    review_count = conn.execute("SELECT COUNT(*) FROM reviews").fetchone()[0]
+    photo_count = conn.execute("SELECT COUNT(*) FROM photos").fetchone()[0]
+    country_count = conn.execute(
+        "SELECT COUNT(DISTINCT country_code) FROM places WHERE country_code IS NOT NULL"
+    ).fetchone()[0]
+    avg = conn.execute("SELECT AVG(rating) FROM reviews").fetchone()[0] or 0
+    first_at, last_at = conn.execute(
+        "SELECT MIN(reviewed_at), MAX(reviewed_at) FROM reviews"
+    ).fetchone()
+    return {
+        "place_count": place_count,
+        "review_count": review_count,
+        "photo_count": photo_count,
+        "country_count": country_count,
+        "avg_rating": round(avg, 2),
+        "first_review_at": first_at,
+        "last_review_at": last_at,
+    }
+
+
+def by_country(conn: sqlite3.Connection) -> list[dict]:
+    rows = conn.execute(
+        "SELECT p.country_code, COUNT(DISTINCT p.place_key), AVG(r.rating) "
+        "FROM places p JOIN reviews r ON r.place_key = p.place_key "
+        "WHERE p.country_code IS NOT NULL "
+        "GROUP BY p.country_code ORDER BY COUNT(DISTINCT p.place_key) DESC"
+    ).fetchall()
+    return [
+        {"country_code": cc, "count": n, "avg_rating": round(a or 0, 2)}
+        for cc, n, a in rows
+    ]
+
+
+def by_category(conn: sqlite3.Connection) -> list[dict]:
+    rows = conn.execute(
+        "SELECT COALESCE(p.category,'unknown'), COUNT(DISTINCT p.place_key), AVG(r.rating) "
+        "FROM places p JOIN reviews r ON r.place_key = p.place_key "
+        "GROUP BY p.category ORDER BY COUNT(DISTINCT p.place_key) DESC"
+    ).fetchall()
+    return [
+        {"category": c, "count": n, "avg_rating": round(a or 0, 2)}
+        for c, n, a in rows
+    ]
+
+
+def _extract_city(address: str | None) -> str | None:
+    if not address:
+        return None
+    parts = [p.strip() for p in address.split(",") if p.strip()]
+    if len(parts) < 2:
+        return None
+    return parts[-2] if len(parts) >= 2 else parts[0]
+
+
+def by_city(conn: sqlite3.Connection) -> list[dict]:
+    rows = conn.execute(
+        "SELECT p.address, p.place_key, r.rating "
+        "FROM places p JOIN reviews r ON r.place_key = p.place_key "
+        "WHERE p.address IS NOT NULL"
+    ).fetchall()
+    buckets: dict[str, dict] = {}
+    for addr, pk, rating in rows:
+        city = _extract_city(addr)
+        if not city:
+            continue
+        b = buckets.setdefault(city, {"places": set(), "ratings": []})
+        b["places"].add(pk)
+        if rating is not None:
+            b["ratings"].append(rating)
+    out = [
+        {
+            "city": city,
+            "count": len(b["places"]),
+            "avg_rating": round(sum(b["ratings"]) / len(b["ratings"]), 2)
+            if b["ratings"] else 0,
+        }
+        for city, b in buckets.items()
+    ]
+    out.sort(key=lambda d: d["count"], reverse=True)
+    return out
+
+
+def rating_distribution(conn: sqlite3.Connection) -> dict[str, int]:
+    rows = conn.execute(
+        "SELECT rating, COUNT(*) FROM reviews WHERE rating IS NOT NULL GROUP BY rating"
+    ).fetchall()
+    dist = {str(i): 0 for i in range(1, 6)}
+    for r, n in rows:
+        dist[str(int(r))] = n
+    return dist
+
+
+def reviews_over_time(conn: sqlite3.Connection) -> list[dict]:
+    rows = conn.execute(
+        "SELECT strftime('%Y-%m', reviewed_at) m, COUNT(*) "
+        "FROM reviews WHERE reviewed_at IS NOT NULL "
+        "GROUP BY m ORDER BY m"
+    ).fetchall()
+    return [{"month": m, "count": n} for m, n in rows if m]
+
+
+def places_for_map(conn: sqlite3.Connection) -> list[dict]:
+    rows = conn.execute(
+        "SELECT p.place_key, p.canonical_name, p.category, p.country_code, "
+        "p.lat, p.lng, COUNT(r.review_id), AVG(r.rating), MAX(r.text) "
+        "FROM places p JOIN reviews r ON r.place_key = p.place_key "
+        "WHERE p.lat IS NOT NULL AND p.lng IS NOT NULL "
+        "GROUP BY p.place_key"
+    ).fetchall()
+    out = []
+    for pk, name, cat, cc, lat, lng, n, avg, sample in rows:
+        text = (sample or "")[:240]
+        out.append({
+            "place_key": pk, "name": name, "category": cat,
+            "country_code": cc, "lat": lat, "lng": lng,
+            "review_count": n, "avg_rating": round(avg or 0, 2),
+            "sample_text": text,
+        })
+    return out
+
+
+def taste_sentence(conn: sqlite3.Connection) -> str:
+    cats = by_category(conn)
+    if not cats:
+        return "Not enough reviews yet for a taste profile."
+    top = cats[0]
+    pieces = [f"You've reviewed {top['count']} {top['category']} places (avg {top['avg_rating']})"]
+    if len(cats) > 1:
+        diff = round(top["avg_rating"] - cats[1]["avg_rating"], 2)
+        if diff > 0.1:
+            pieces.append(
+                f"rating them {diff} stars higher than {cats[1]['category']} on average"
+            )
+    countries = by_country(conn)
+    if countries:
+        top_c = countries[0]
+        pieces.append(f"with {top_c['count']} places in {top_c['country_code']}")
+    return ", ".join(pieces) + "."
