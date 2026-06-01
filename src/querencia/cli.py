@@ -67,10 +67,11 @@ def story(ctx, theme, year, as_json):
 @cli.command()
 @click.argument("question")
 @click.option("--json", "as_json", is_flag=True)
+@click.option("--hops", default=0, type=int, help="Expand vector hits by N graph hops.")
 @click.pass_context
-def ask(ctx, question, as_json):
+def ask(ctx, question, as_json, hops):
     from .embed import Embedder
-    results = query.recall(ctx.obj["conn"], question, Embedder(), k=10)
+    results = query.recall(ctx.obj["conn"], question, Embedder(), k=10, expand_hops=hops)
     if as_json:
         click.echo(json.dumps(results, indent=2))
         return
@@ -88,6 +89,45 @@ def ask(ctx, question, as_json):
 @click.pass_context
 def taste(ctx, city):
     click.echo(json.dumps(query.taste(ctx.obj["conn"], city), indent=2))
+
+
+@cli.command()
+@click.option("--viz", "viz_path", default=None, help="Write standalone HTML viz to this path.")
+@click.option("--top", default=10, type=int, help="Top-N PageRank places to report.")
+@click.pass_context
+def graph(ctx, viz_path, top):
+    from . import graph as g
+    conn = ctx.obj["conn"]
+    if viz_path:
+        _write_viz(conn, viz_path)
+        click.echo(f"wrote: {viz_path}")
+        return
+    G = g.build_graph(conn)
+    click.echo(json.dumps({
+        "node_count": G.number_of_nodes(),
+        "edge_count": G.number_of_edges(),
+        "pagerank": g.pagerank(conn, k=top),
+        "communities": g.communities(conn),
+    }, indent=2))
+
+
+def _write_viz(conn, path: str) -> None:
+    from pyvis.network import Network
+    from . import graph as g
+    G = g.build_graph(conn)
+    ranks = {r["place_key"]: r["score"] for r in g.pagerank(conn, k=10**6)}
+    comms = g.communities(conn)
+    comm_of = {key: i for i, c in enumerate(comms) for key in c}
+    net = Network(height="800px", width="100%", directed=True, notebook=False)
+    net.barnes_hut()
+    for key, attrs in G.nodes(data=True):
+        label = attrs.get("name") or key
+        title = f"{label}\n{attrs.get('category') or ''}\n{attrs.get('country_code') or ''}"
+        size = 10 + 200 * ranks.get(key, 0)
+        net.add_node(key, label=label, title=title, group=comm_of.get(key, 0), value=size)
+    for src, dst, data in G.edges(data=True):
+        net.add_edge(src, dst, title=data.get("travel_mode") or "")
+    net.write_html(path, notebook=False, open_browser=False)
 
 
 if __name__ == "__main__":

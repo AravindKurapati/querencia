@@ -1,7 +1,13 @@
 import sqlite3
 
 
-def recall(conn: sqlite3.Connection, question: str, embedder, k: int = 10) -> list[dict]:
+def recall(
+    conn: sqlite3.Connection,
+    question: str,
+    embedder,
+    k: int = 10,
+    expand_hops: int = 0,
+) -> list[dict]:
     qvec = embedder.encode(question)
     rows = conn.execute(
         "SELECT v.place_key, distance, p.canonical_name, p.category, p.country_code "
@@ -11,7 +17,9 @@ def recall(conn: sqlite3.Connection, question: str, embedder, k: int = 10) -> li
         (f"[{','.join(str(x) for x in qvec)}]", k),
     ).fetchall()
     out = []
+    seen: set[str] = set()
     for key, dist, name, category, cc in rows:
+        seen.add(key)
         reviews = [
             {"rating": r[0], "text": r[1]}
             for r in conn.execute(
@@ -22,6 +30,28 @@ def recall(conn: sqlite3.Connection, question: str, embedder, k: int = 10) -> li
             "place_key": key, "name": name, "category": category,
             "country_code": cc, "distance": dist, "reviews": reviews,
         })
+    if expand_hops > 0 and seen:
+        from .graph import expand_hops as _expand
+        neighbors = _expand(conn, seen, hops=expand_hops) - seen
+        for key in neighbors:
+            row = conn.execute(
+                "SELECT canonical_name, category, country_code FROM places WHERE place_key=?",
+                (key,),
+            ).fetchone()
+            if not row:
+                continue
+            name, category, cc = row
+            reviews = [
+                {"rating": r[0], "text": r[1]}
+                for r in conn.execute(
+                    "SELECT rating, text FROM reviews WHERE place_key=?", (key,)
+                )
+            ]
+            out.append({
+                "place_key": key, "name": name, "category": category,
+                "country_code": cc, "distance": None, "reviews": reviews,
+                "via": "graph_hop",
+            })
     return out
 
 

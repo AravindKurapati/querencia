@@ -66,6 +66,22 @@ querencia --db querencia.db taste Lisbon
 Builds a preference profile (top categories, average rating) from everywhere you've actually
 been and rated, so you can predict what you'd enjoy in a city you've never visited.
 
+## Graph analytics + visualization
+
+Treats `places` + `transitions` as a property graph and runs NetworkX on top — no extra infra.
+
+```bash
+querencia --db querencia.db graph                  # JSON: node/edge counts, top PageRank, communities
+querencia --db querencia.db graph --viz graph.html # standalone interactive HTML (pyvis)
+querencia --db querencia.db ask "rooftop bars" --hops 1  # GraphRAG-style: expand vector hits 1 hop
+```
+
+`--hops` expands the vector top-k by N graph hops over `transitions` before returning, so
+recall pulls in places you went *to* from a match even if their text didn't embed close.
+Synthetic Reviews-only demos have no `transitions`, so PageRank degenerates to a flat list
+there — communities and hop-expansion light up once commute or photo data lands. See
+`FEATURE_graph_analytics.md` for design.
+
 ## MCP server
 
 Expose the query tools to Claude Code so it does the prose for free:
@@ -80,7 +96,7 @@ Set `QUERENCIA_DB` to point the server at your database. Tools: `querencia_narra
 ## Surfaces
 
 - **Python library** — `querencia.ingest`, `querencia.query`, `querencia.embed`, `querencia.enrich`.
-- **CLI** — `querencia ingest|enrich|embed|story|ask|taste`.
+- **CLI** — `querencia ingest|enrich|embed|story|ask|taste|graph`.
 - **MCP server** — `querencia.mcp_server`.
 
 See `ARCHITECTURE.md` for the full end-to-end pipeline and design, `SCHEMA.md` for the database
