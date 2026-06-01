@@ -32,6 +32,24 @@ def _taste_tool(conn, city) -> dict:
     return query.taste(conn, city)
 
 
+def _trips_tool(conn, rebuild=False) -> list[dict]:
+    from . import trips as t
+    has_any = conn.execute("SELECT 1 FROM trips LIMIT 1").fetchone()
+    if rebuild or not has_any:
+        t.materialize_trips(conn)
+    return t.list_trips(conn)
+
+
+def _recommend_tool(conn, city, top=5) -> list[dict]:
+    from .embed import Embedder
+    from .taste import PlacesClient, recommend
+    try:
+        client = PlacesClient()
+    except KeyError:
+        client = None
+    return recommend(conn, Embedder(), city, client=client, top=top)
+
+
 mcp = FastMCP("querencia")
 
 
@@ -57,6 +75,18 @@ def querencia_patterns(kind: str = "categories") -> dict:
 def querencia_taste(city: str) -> dict:
     """Preference profile for predicting what the user would like in a new city."""
     return _taste_tool(_get_conn(), city)
+
+
+@mcp.tool()
+def querencia_trips(rebuild: bool = False) -> list[dict]:
+    """Detected trips (spatiotemporal clusters of visits). Set rebuild=True to re-detect."""
+    return _trips_tool(_get_conn(), rebuild=rebuild)
+
+
+@mcp.tool()
+def querencia_recommend(city: str, top: int = 5) -> list[dict]:
+    """Ranked place recommendations in `city` against the user's preference vector."""
+    return _recommend_tool(_get_conn(), city, top=top)
 
 
 def main():

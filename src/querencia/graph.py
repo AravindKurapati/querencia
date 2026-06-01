@@ -11,7 +11,13 @@ from typing import Iterable
 import networkx as nx
 
 
-def build_graph(conn: sqlite3.Connection) -> nx.MultiDiGraph:
+def build_graph(
+    conn: sqlite3.Connection,
+    *,
+    include_derived: bool = True,
+    covisit_hours: float = 24.0,
+    semantic_k: int = 3,
+) -> nx.MultiDiGraph:
     g = nx.MultiDiGraph()
     for row in conn.execute(
         "SELECT place_key, canonical_name, category, country_code, lat, lng FROM places"
@@ -30,8 +36,73 @@ def build_graph(conn: sqlite3.Connection) -> nx.MultiDiGraph:
         "WHERE from_place_key IS NOT NULL AND to_place_key IS NOT NULL"
     ):
         if src in g and dst in g:
-            g.add_edge(src, dst, travel_mode=mode)
+            g.add_edge(src, dst, kind="transition", travel_mode=mode)
+    if include_derived:
+        for src, dst in _covisit_edges(conn, hours=covisit_hours):
+            if src in g and dst in g:
+                g.add_edge(src, dst, kind="co_visit")
+        for src, dst in _semantic_edges(conn, k=semantic_k):
+            if src in g and dst in g:
+                g.add_edge(src, dst, kind="semantic")
     return g
+
+
+def _covisit_edges(conn: sqlite3.Connection, *, hours: float) -> list[tuple[str, str]]:
+    """Edges between places whose events fall within `hours` of each other."""
+    rows = conn.execute(
+        """
+        SELECT place_key, reviewed_at AS t FROM reviews WHERE reviewed_at IS NOT NULL
+        UNION ALL
+        SELECT place_key, taken_at FROM photos WHERE taken_at IS NOT NULL
+        UNION ALL
+        SELECT place_key, occurred_at FROM visits WHERE occurred_at IS NOT NULL
+        """
+    ).fetchall()
+    from datetime import datetime
+    events = []
+    for key, t in rows:
+        try:
+            events.append((key, datetime.fromisoformat(str(t).replace("Z", "+00:00"))))
+        except (ValueError, TypeError):
+            continue
+    events.sort(key=lambda e: e[1])
+    out: set[tuple[str, str]] = set()
+    window = hours * 3600
+    for i, (k1, t1) in enumerate(events):
+        for j in range(i + 1, len(events)):
+            k2, t2 = events[j]
+            if (t2 - t1).total_seconds() > window:
+                break
+            if k1 != k2:
+                a, b = sorted([k1, k2])
+                out.add((a, b))
+    return list(out)
+
+
+def _semantic_edges(conn: sqlite3.Connection, *, k: int) -> list[tuple[str, str]]:
+    """Top-k vector neighbors per place become undirected edges (deduped)."""
+    keys = [r[0] for r in conn.execute("SELECT place_key FROM place_vec")]
+    if len(keys) < 2:
+        return []
+    out: set[tuple[str, str]] = set()
+    for key in keys:
+        vec_row = conn.execute(
+            "SELECT embedding FROM place_vec WHERE place_key=?", (key,)
+        ).fetchone()
+        if not vec_row:
+            continue
+        neighbors = conn.execute(
+            "SELECT place_key FROM place_vec "
+            "WHERE embedding MATCH ? AND k=? "
+            "ORDER BY distance",
+            (vec_row[0], k + 1),
+        ).fetchall()
+        for (nk,) in neighbors:
+            if nk == key:
+                continue
+            a, b = sorted([key, nk])
+            out.add((a, b))
+    return list(out)
 
 
 def pagerank(conn: sqlite3.Connection, k: int = 10) -> list[dict]:

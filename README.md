@@ -57,14 +57,30 @@ querencia --db querencia.db story --theme food
 Places API — it requires `GOOGLE_PLACES_API_KEY` in your environment and is the only step that
 calls an external service. Real review/photo data is gitignored and never committed.
 
-## Hero demo: `querencia taste <city>`
+## Hero demo: `querencia recommend <city>`
 
 ```bash
-querencia --db querencia.db taste Lisbon
+querencia --db querencia.db recommend Lisbon
 ```
 
-Builds a preference profile (top categories, average rating) from everywhere you've actually
-been and rated, so you can predict what you'd enjoy in a city you've never visited.
+Builds a per-category preference vector (weighted by `rating - avg`) from your reviews,
+fetches candidate places in the target city (Google Places, cached), and ranks them by
+cosine similarity. Falls back to in-DB candidates from the same country when no API key
+is set.
+
+`querencia taste <city>` still emits the preference profile alone (top categories,
+average rating) if you just want the summary.
+
+## Trips
+
+```bash
+querencia --db querencia.db trips --rebuild   # detect spatiotemporal clusters
+querencia --db querencia.db story --trip 3    # narrative scoped to one trip
+```
+
+Spatiotemporal clustering (connected components on lat/lng × time) groups your reviews,
+photos, and visits into trips and excludes your home cluster automatically. See
+`FEATURE_trips.md` for design.
 
 ## Graph analytics + visualization
 
@@ -90,13 +106,14 @@ Expose the query tools to Claude Code so it does the prose for free:
 claude mcp add querencia -- python -m querencia.mcp_server
 ```
 
-Set `QUERENCIA_DB` to point the server at your database. Tools: `querencia_narrative`, `querencia_recall`,
-`querencia_patterns`, `querencia_taste`.
+Set `QUERENCIA_DB` to point the server at your database. Tools: `querencia_narrative`,
+`querencia_recall`, `querencia_patterns`, `querencia_taste`, `querencia_trips`,
+`querencia_recommend`. See `RECIPES.md` for canonical multi-turn flows.
 
 ## Surfaces
 
 - **Python library** — `querencia.ingest`, `querencia.query`, `querencia.embed`, `querencia.enrich`.
-- **CLI** — `querencia ingest|enrich|embed|story|ask|taste|graph`.
+- **CLI** — `querencia ingest|enrich|embed|story|ask|taste|graph|trips|recommend`.
 - **MCP server** — `querencia.mcp_server`.
 
 See `ARCHITECTURE.md` for the full end-to-end pipeline and design, `SCHEMA.md` for the database

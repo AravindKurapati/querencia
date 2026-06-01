@@ -43,6 +43,33 @@ CREATE TABLE IF NOT EXISTS transitions (
   travel_mode    TEXT,
   PRIMARY KEY (from_place_key, to_place_key, travel_mode)
 );
+CREATE TABLE IF NOT EXISTS trips (
+  trip_id       INTEGER PRIMARY KEY,
+  started_at    TIMESTAMP,
+  ended_at      TIMESTAMP,
+  country_code  TEXT,
+  lead_category TEXT,
+  place_count   INTEGER,
+  lat REAL, lng REAL
+);
+CREATE TABLE IF NOT EXISTS trip_places (
+  trip_id   INTEGER REFERENCES trips(trip_id) ON DELETE CASCADE,
+  place_key TEXT REFERENCES places(place_key),
+  PRIMARY KEY (trip_id, place_key)
+);
+CREATE TABLE IF NOT EXISTS pref_vectors (
+  category    TEXT PRIMARY KEY,
+  vector      BLOB,
+  n_reviews   INTEGER,
+  computed_at TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS candidate_cache (
+  city       TEXT,
+  category   TEXT,
+  payload    TEXT,
+  fetched_at TIMESTAMP,
+  PRIMARY KEY (city, category)
+);
 CREATE VIRTUAL TABLE IF NOT EXISTS place_fts USING fts5(place_key UNINDEXED, rendered_text);
 """
 
