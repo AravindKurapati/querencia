@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-feature-settings: "ss01", "cv11";
+}
+
+.maplibregl-canvas { outline: none !important; }

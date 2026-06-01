@@ -1,0 +1,832 @@
+{
+  "generated_at": "2026-05-27T02:15:04+00:00",
+  "summary": {
+    "place_count": 40,
+    "review_count": 40,
+    "photo_count": 0,
+    "country_count": 5,
+    "avg_rating": 4.15,
+    "first_review_at": "2020-02-15T12:00:00Z",
+    "last_review_at": "2025-07-15T12:00:00Z"
+  },
+  "places": [
+    {
+      "place_key": "pid:0",
+      "name": "Diner 0",
+      "category": "park",
+      "country_code": "IN",
+      "lat": 12.927243628666755,
+      "lng": 77.60509344730399,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Diner 0."
+    },
+    {
+      "place_key": "pid:1",
+      "name": "Bistro 1",
+      "category": "bakery",
+      "country_code": "FR",
+      "lat": 48.80859472336892,
+      "lng": 2.3214698180835662,
+      "review_count": 1,
+      "avg_rating": 3.0,
+      "sample_text": "Loved the vibe at Bistro 1."
+    },
+    {
+      "place_key": "pid:10",
+      "name": "Garden 16",
+      "category": "cafe",
+      "country_code": "SE",
+      "lat": 59.29512983831164,
+      "lng": 18.028298469466133,
+      "review_count": 1,
+      "avg_rating": 3.0,
+      "sample_text": "Loved the vibe at Garden 16."
+    },
+    {
+      "place_key": "pid:11",
+      "name": "Diner 17",
+      "category": "bar",
+      "country_code": "SE",
+      "lat": 59.2945676392458,
+      "lng": 18.048193072232674,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Diner 17."
+    },
+    {
+      "place_key": "pid:12",
+      "name": "Corner 18",
+      "category": "cafe",
+      "country_code": "FR",
+      "lat": 48.85154914330708,
+      "lng": 2.369049365713598,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Corner 18."
+    },
+    {
+      "place_key": "pid:13",
+      "name": "Market 19",
+      "category": "park",
+      "country_code": "FR",
+      "lat": 48.810353709371036,
+      "lng": 2.339897883232027,
+      "review_count": 1,
+      "avg_rating": 3.0,
+      "sample_text": "Loved the vibe at Market 19."
+    },
+    {
+      "place_key": "pid:14",
+      "name": "Cafe 20",
+      "category": "cafe",
+      "country_code": "GR",
+      "lat": 37.94099283050004,
+      "lng": 23.714062686832474,
+      "review_count": 1,
+      "avg_rating": 3.0,
+      "sample_text": "Loved the vibe at Cafe 20."
+    },
+    {
+      "place_key": "pid:15",
+      "name": "Diner 21",
+      "category": "bakery",
+      "country_code": "US",
+      "lat": 40.69636099220346,
+      "lng": -74.03985356319774,
+      "review_count": 1,
+      "avg_rating": 3.0,
+      "sample_text": "Loved the vibe at Diner 21."
+    },
+    {
+      "place_key": "pid:16",
+      "name": "Market 22",
+      "category": "cafe",
+      "country_code": "FR",
+      "lat": 48.89554680239215,
+      "lng": 2.36344095785339,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Market 22."
+    },
+    {
+      "place_key": "pid:17",
+      "name": "Cafe 23",
+      "category": "park",
+      "country_code": "US",
+      "lat": 40.70659894591599,
+      "lng": -73.95068972782953,
+      "review_count": 1,
+      "avg_rating": 3.0,
+      "sample_text": "Loved the vibe at Cafe 23."
+    },
+    {
+      "place_key": "pid:18",
+      "name": "Cafe 24",
+      "category": "bar",
+      "country_code": "GR",
+      "lat": 37.977862194351,
+      "lng": 23.74403512244281,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Cafe 24."
+    },
+    {
+      "place_key": "pid:19",
+      "name": "Garden 25",
+      "category": "bakery",
+      "country_code": "US",
+      "lat": 40.729006758587936,
+      "lng": -74.0138247540991,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Garden 25."
+    },
+    {
+      "place_key": "pid:1a",
+      "name": "Rooftop 26",
+      "category": "bakery",
+      "country_code": "US",
+      "lat": 40.67670420345343,
+      "lng": -74.01333002082389,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Rooftop 26."
+    },
+    {
+      "place_key": "pid:1b",
+      "name": "Corner 27",
+      "category": "cafe",
+      "country_code": "FR",
+      "lat": 48.878839926410414,
+      "lng": 2.361322822281354,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Corner 27."
+    },
+    {
+      "place_key": "pid:1c",
+      "name": "Garden 28",
+      "category": "bakery",
+      "country_code": "GR",
+      "lat": 38.003100399247536,
+      "lng": 23.719278184291394,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Garden 28."
+    },
+    {
+      "place_key": "pid:1d",
+      "name": "Garden 29",
+      "category": "bakery",
+      "country_code": "IN",
+      "lat": 12.964722767776673,
+      "lng": 77.63565150763414,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Garden 29."
+    },
+    {
+      "place_key": "pid:1e",
+      "name": "Garden 30",
+      "category": "restaurant",
+      "country_code": "US",
+      "lat": 40.67967061634193,
+      "lng": -74.02731541732693,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Garden 30."
+    },
+    {
+      "place_key": "pid:1f",
+      "name": "Bistro 31",
+      "category": "park",
+      "country_code": "FR",
+      "lat": 48.83440069019768,
+      "lng": 2.390919919798507,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Bistro 31."
+    },
+    {
+      "place_key": "pid:2",
+      "name": "Market 2",
+      "category": "restaurant",
+      "country_code": "US",
+      "lat": 40.672380196114965,
+      "lng": -73.9673147875328,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Market 2."
+    },
+    {
+      "place_key": "pid:20",
+      "name": "Market 32",
+      "category": "cafe",
+      "country_code": "US",
+      "lat": 40.677852171833756,
+      "lng": -74.0021967255406,
+      "review_count": 1,
+      "avg_rating": 3.0,
+      "sample_text": "Loved the vibe at Market 32."
+    },
+    {
+      "place_key": "pid:21",
+      "name": "Kitchen 33",
+      "category": "park",
+      "country_code": "SE",
+      "lat": 59.28849192494511,
+      "lng": 18.094335271080432,
+      "review_count": 1,
+      "avg_rating": 3.0,
+      "sample_text": "Loved the vibe at Kitchen 33."
+    },
+    {
+      "place_key": "pid:22",
+      "name": "Diner 34",
+      "category": "bakery",
+      "country_code": "US",
+      "lat": 40.74065019820322,
+      "lng": -73.95951479042668,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Diner 34."
+    },
+    {
+      "place_key": "pid:23",
+      "name": "Diner 35",
+      "category": "bakery",
+      "country_code": "IN",
+      "lat": 12.922139667432193,
+      "lng": 77.59482855597957,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Diner 35."
+    },
+    {
+      "place_key": "pid:24",
+      "name": "Market 36",
+      "category": "cafe",
+      "country_code": "GR",
+      "lat": 37.95110423373281,
+      "lng": 23.752615525181522,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Market 36."
+    },
+    {
+      "place_key": "pid:25",
+      "name": "Garden 37",
+      "category": "bakery",
+      "country_code": "FR",
+      "lat": 48.8544352765523,
+      "lng": 2.3325989307905473,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Garden 37."
+    },
+    {
+      "place_key": "pid:26",
+      "name": "Kitchen 38",
+      "category": "bakery",
+      "country_code": "IN",
+      "lat": 12.971676083669536,
+      "lng": 77.62150470324181,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Kitchen 38."
+    },
+    {
+      "place_key": "pid:27",
+      "name": "Bistro 39",
+      "category": "park",
+      "country_code": "GR",
+      "lat": 37.99085546389515,
+      "lng": 23.747650615709354,
+      "review_count": 1,
+      "avg_rating": 3.0,
+      "sample_text": "Loved the vibe at Bistro 39."
+    },
+    {
+      "place_key": "pid:3",
+      "name": "Market 3",
+      "category": "restaurant",
+      "country_code": "FR",
+      "lat": 48.80465826806178,
+      "lng": 2.3976255105592923,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Market 3."
+    },
+    {
+      "place_key": "pid:4",
+      "name": "Cafe 4",
+      "category": "bakery",
+      "country_code": "GR",
+      "lat": 38.011612635912,
+      "lng": 23.70084818241019,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Cafe 4."
+    },
+    {
+      "place_key": "pid:5",
+      "name": "Garden 5",
+      "category": "bar",
+      "country_code": "FR",
+      "lat": 48.87121107657462,
+      "lng": 2.3097430575994733,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Garden 5."
+    },
+    {
+      "place_key": "pid:6",
+      "name": "Kitchen 6",
+      "category": "bakery",
+      "country_code": "GR",
+      "lat": 37.96141471703768,
+      "lng": 23.712759230566938,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Kitchen 6."
+    },
+    {
+      "place_key": "pid:7",
+      "name": "Garden 7",
+      "category": "cafe",
+      "country_code": "IN",
+      "lat": 12.944409651072215,
+      "lng": 77.60989944337297,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Garden 7."
+    },
+    {
+      "place_key": "pid:8",
+      "name": "Corner 8",
+      "category": "park",
+      "country_code": "SE",
+      "lat": 59.37801748474926,
+      "lng": 18.04879377648902,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Corner 8."
+    },
+    {
+      "place_key": "pid:9",
+      "name": "Corner 9",
+      "category": "cafe",
+      "country_code": "GR",
+      "lat": 37.97216983544767,
+      "lng": 23.763327021218064,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Corner 9."
+    },
+    {
+      "place_key": "pid:a",
+      "name": "Corner 10",
+      "category": "bar",
+      "country_code": "FR",
+      "lat": 48.8594369877105,
+      "lng": 2.369529536627366,
+      "review_count": 1,
+      "avg_rating": 3.0,
+      "sample_text": "Loved the vibe at Corner 10."
+    },
+    {
+      "place_key": "pid:b",
+      "name": "Rooftop 11",
+      "category": "park",
+      "country_code": "US",
+      "lat": 40.66649999757161,
+      "lng": -73.98029579321731,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Rooftop 11."
+    },
+    {
+      "place_key": "pid:c",
+      "name": "Kitchen 12",
+      "category": "bar",
+      "country_code": "FR",
+      "lat": 48.88870402922381,
+      "lng": 2.3716627794398306,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Kitchen 12."
+    },
+    {
+      "place_key": "pid:d",
+      "name": "Diner 13",
+      "category": "bakery",
+      "country_code": "IN",
+      "lat": 12.925895441933132,
+      "lng": 77.55170957944817,
+      "review_count": 1,
+      "avg_rating": 5.0,
+      "sample_text": "Loved the vibe at Diner 13."
+    },
+    {
+      "place_key": "pid:e",
+      "name": "Market 14",
+      "category": "park",
+      "country_code": "GR",
+      "lat": 37.979650669902995,
+      "lng": 23.761681622618006,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Market 14."
+    },
+    {
+      "place_key": "pid:f",
+      "name": "Rooftop 15",
+      "category": "cafe",
+      "country_code": "FR",
+      "lat": 48.88639844696986,
+      "lng": 2.3819279837835743,
+      "review_count": 1,
+      "avg_rating": 4.0,
+      "sample_text": "Loved the vibe at Rooftop 15."
+    }
+  ],
+  "by_country": [
+    {
+      "country_code": "FR",
+      "count": 12,
+      "avg_rating": 4.0
+    },
+    {
+      "country_code": "US",
+      "count": 9,
+      "avg_rating": 4.22
+    },
+    {
+      "country_code": "GR",
+      "count": 9,
+      "avg_rating": 4.11
+    },
+    {
+      "country_code": "IN",
+      "count": 6,
+      "avg_rating": 4.67
+    },
+    {
+      "country_code": "SE",
+      "count": 4,
+      "avg_rating": 3.75
+    }
+  ],
+  "by_category": [
+    {
+      "category": "bakery",
+      "count": 13,
+      "avg_rating": 4.38
+    },
+    {
+      "category": "cafe",
+      "count": 10,
+      "avg_rating": 3.9
+    },
+    {
+      "category": "park",
+      "count": 9,
+      "avg_rating": 3.78
+    },
+    {
+      "category": "bar",
+      "count": 5,
+      "avg_rating": 4.4
+    },
+    {
+      "category": "restaurant",
+      "count": 3,
+      "avg_rating": 4.67
+    }
+  ],
+  "by_city": [
+    {
+      "city": "0 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "1 Main St",
+      "count": 1,
+      "avg_rating": 3.0
+    },
+    {
+      "city": "2 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "3 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "4 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "5 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "6 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "7 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "8 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "9 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "10 Main St",
+      "count": 1,
+      "avg_rating": 3.0
+    },
+    {
+      "city": "11 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "12 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "13 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "14 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "15 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "16 Main St",
+      "count": 1,
+      "avg_rating": 3.0
+    },
+    {
+      "city": "17 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "18 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "19 Main St",
+      "count": 1,
+      "avg_rating": 3.0
+    },
+    {
+      "city": "20 Main St",
+      "count": 1,
+      "avg_rating": 3.0
+    },
+    {
+      "city": "21 Main St",
+      "count": 1,
+      "avg_rating": 3.0
+    },
+    {
+      "city": "22 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "23 Main St",
+      "count": 1,
+      "avg_rating": 3.0
+    },
+    {
+      "city": "24 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "25 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "26 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "27 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "28 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "29 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "30 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "31 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "32 Main St",
+      "count": 1,
+      "avg_rating": 3.0
+    },
+    {
+      "city": "33 Main St",
+      "count": 1,
+      "avg_rating": 3.0
+    },
+    {
+      "city": "34 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "35 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "36 Main St",
+      "count": 1,
+      "avg_rating": 4.0
+    },
+    {
+      "city": "37 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "38 Main St",
+      "count": 1,
+      "avg_rating": 5.0
+    },
+    {
+      "city": "39 Main St",
+      "count": 1,
+      "avg_rating": 3.0
+    }
+  ],
+  "rating_dist": {
+    "1": 0,
+    "2": 0,
+    "3": 10,
+    "4": 14,
+    "5": 16
+  },
+  "reviews_over_time": [
+    {
+      "month": "2020-02",
+      "count": 1
+    },
+    {
+      "month": "2020-05",
+      "count": 1
+    },
+    {
+      "month": "2020-09",
+      "count": 2
+    },
+    {
+      "month": "2021-01",
+      "count": 2
+    },
+    {
+      "month": "2021-02",
+      "count": 1
+    },
+    {
+      "month": "2021-03",
+      "count": 2
+    },
+    {
+      "month": "2021-04",
+      "count": 1
+    },
+    {
+      "month": "2021-05",
+      "count": 1
+    },
+    {
+      "month": "2021-08",
+      "count": 3
+    },
+    {
+      "month": "2021-09",
+      "count": 1
+    },
+    {
+      "month": "2022-01",
+      "count": 1
+    },
+    {
+      "month": "2022-03",
+      "count": 1
+    },
+    {
+      "month": "2022-04",
+      "count": 1
+    },
+    {
+      "month": "2022-07",
+      "count": 1
+    },
+    {
+      "month": "2023-02",
+      "count": 1
+    },
+    {
+      "month": "2023-05",
+      "count": 1
+    },
+    {
+      "month": "2024-01",
+      "count": 3
+    },
+    {
+      "month": "2024-02",
+      "count": 1
+    },
+    {
+      "month": "2024-03",
+      "count": 1
+    },
+    {
+      "month": "2024-05",
+      "count": 1
+    },
+    {
+      "month": "2024-06",
+      "count": 2
+    },
+    {
+      "month": "2024-08",
+      "count": 2
+    },
+    {
+      "month": "2025-02",
+      "count": 3
+    },
+    {
+      "month": "2025-03",
+      "count": 1
+    },
+    {
+      "month": "2025-04",
+      "count": 1
+    },
+    {
+      "month": "2025-05",
+      "count": 1
+    },
+    {
+      "month": "2025-06",
+      "count": 2
+    },
+    {
+      "month": "2025-07",
+      "count": 1
+    }
+  ],
+  "taste_sentence": "You've reviewed 13 bakery places (avg 4.38), rating them 0.48 stars higher than cafe on average, with 12 places in FR."
+}

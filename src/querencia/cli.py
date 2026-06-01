@@ -90,5 +90,19 @@ def taste(ctx, city):
     click.echo(json.dumps(query.taste(ctx.obj["conn"], city), indent=2))
 
 
+@cli.command()
+@click.option("--out", "out_path", default="web/public/data.json",
+              help="Where to write the JSON snapshot.")
+@click.pass_context
+def export(ctx, out_path):
+    from .export import export_to_file
+    snap = export_to_file(ctx.obj["conn"], out_path)
+    s = snap["summary"]
+    click.echo(
+        f"wrote {out_path}: places={s['place_count']} reviews={s['review_count']} "
+        f"countries={s['country_count']}"
+    )
+
+
 if __name__ == "__main__":
     cli()
