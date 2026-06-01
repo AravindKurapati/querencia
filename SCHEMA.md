@@ -55,6 +55,39 @@ CREATE TABLE transitions (
   PRIMARY KEY (from_place_key, to_place_key, travel_mode)
 );
 
+-- Detected trips (spatiotemporal clusters of visits). Materialized by `querencia trips`.
+CREATE TABLE trips (
+  trip_id       INTEGER PRIMARY KEY,
+  started_at    TIMESTAMP,
+  ended_at      TIMESTAMP,
+  country_code  TEXT,
+  lead_category TEXT,
+  place_count   INTEGER,
+  lat REAL, lng REAL
+);
+CREATE TABLE trip_places (
+  trip_id   INTEGER REFERENCES trips(trip_id) ON DELETE CASCADE,
+  place_key TEXT REFERENCES places(place_key),
+  PRIMARY KEY (trip_id, place_key)
+);
+
+-- Per-category user preference vector (pickled np.ndarray). Cache for recommend.
+CREATE TABLE pref_vectors (
+  category    TEXT PRIMARY KEY,
+  vector      BLOB,
+  n_reviews   INTEGER,
+  computed_at TIMESTAMP
+);
+
+-- Candidate places fetched from external sources (Google Places) for a city+category.
+CREATE TABLE candidate_cache (
+  city       TEXT,
+  category   TEXT,
+  payload    TEXT,
+  fetched_at TIMESTAMP,
+  PRIMARY KEY (city, category)
+);
+
 -- Full-text index over the rendered text of each place (keyword recall).
 CREATE VIRTUAL TABLE place_fts USING fts5(place_key UNINDEXED, rendered_text);
 

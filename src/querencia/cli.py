@@ -48,10 +48,11 @@ def embed(ctx):
 @cli.command()
 @click.option("--theme", default=None)
 @click.option("--year", default=None, type=int)
+@click.option("--trip", default=None, type=int, help="Scope to a detected trip id.")
 @click.option("--json", "as_json", is_flag=True)
 @click.pass_context
-def story(ctx, theme, year, as_json):
-    data = query.narrative(ctx.obj["conn"], theme=theme, year=year)
+def story(ctx, theme, year, trip, as_json):
+    data = query.narrative(ctx.obj["conn"], theme=theme, year=year, trip_id=trip)
     if as_json:
         click.echo(json.dumps(data, indent=2))
         return
@@ -89,6 +90,40 @@ def ask(ctx, question, as_json, hops):
 @click.pass_context
 def taste(ctx, city):
     click.echo(json.dumps(query.taste(ctx.obj["conn"], city), indent=2))
+
+
+@cli.command()
+@click.option("--rebuild", is_flag=True, help="Re-detect and replace stored trips.")
+@click.pass_context
+def trips(ctx, rebuild):
+    from . import trips as t
+    conn = ctx.obj["conn"]
+    if rebuild or not conn.execute("SELECT 1 FROM trips LIMIT 1").fetchone():
+        n = t.materialize_trips(conn)
+        click.echo(json.dumps({"detected": n, "trips": t.list_trips(conn)}, indent=2))
+        return
+    click.echo(json.dumps(t.list_trips(conn), indent=2))
+
+
+@cli.command()
+@click.argument("city")
+@click.option("--top", default=5, type=int)
+@click.option("--json", "as_json", is_flag=True)
+@click.pass_context
+def recommend(ctx, city, top, as_json):
+    from .embed import Embedder
+    from .taste import recommend as _recommend
+    results = _recommend(ctx.obj["conn"], Embedder(), city, top=top)
+    if as_json or not results:
+        click.echo(json.dumps(results, indent=2))
+        return
+    from .synth_llm import make_client, render_prose
+    try:
+        client = make_client()
+    except KeyError:
+        click.echo(json.dumps(results, indent=2))
+        return
+    click.echo(render_prose(client, f"What should I do in {city}?", {"recommendations": results}))
 
 
 @cli.command()

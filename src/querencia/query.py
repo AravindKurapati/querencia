@@ -59,7 +59,7 @@ FOOD_CATEGORIES = ("restaurant", "cafe", "bar", "bakery", "food")
 
 
 def narrative(conn: sqlite3.Connection, theme: str | None = None,
-              year: int | None = None) -> dict:
+              year: int | None = None, trip_id: int | None = None) -> dict:
     where, params = [], []
     if theme == "food":
         where.append("p.category IN (%s)" % ",".join("?" * len(FOOD_CATEGORIES)))
@@ -67,6 +67,9 @@ def narrative(conn: sqlite3.Connection, theme: str | None = None,
     if year:
         where.append("strftime('%Y', r.reviewed_at) = ?")
         params.append(str(year))
+    if trip_id is not None:
+        where.append("p.place_key IN (SELECT place_key FROM trip_places WHERE trip_id=?)")
+        params.append(trip_id)
     clause = ("WHERE " + " AND ".join(where)) if where else ""
     rows = conn.execute(
         f"SELECT p.place_key, p.canonical_name, p.category, p.country_code, "
@@ -81,7 +84,7 @@ def narrative(conn: sqlite3.Connection, theme: str | None = None,
         for r in rows[:10]
     ]
     return {
-        "theme": theme, "year": year,
+        "theme": theme, "year": year, "trip_id": trip_id,
         "place_count": len({r[0] for r in rows}),
         "countries": countries,
         "top_rated": top_rated,
