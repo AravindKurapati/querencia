@@ -129,15 +129,16 @@ def recommend(ctx, city, top, as_json):
 @cli.command()
 @click.option("--viz", "viz_path", default=None, help="Write standalone HTML viz to this path.")
 @click.option("--top", default=10, type=int, help="Top-N PageRank places to report.")
+@click.option("--no-derived", is_flag=True, help="Disable co-visit and semantic edges.")
 @click.pass_context
-def graph(ctx, viz_path, top):
+def graph(ctx, viz_path, top, no_derived):
     from . import graph as g
     conn = ctx.obj["conn"]
     if viz_path:
-        _write_viz(conn, viz_path)
+        _write_viz(conn, viz_path, include_derived=not no_derived)
         click.echo(f"wrote: {viz_path}")
         return
-    G = g.build_graph(conn)
+    G = g.build_graph(conn, include_derived=not no_derived)
     click.echo(json.dumps({
         "node_count": G.number_of_nodes(),
         "edge_count": G.number_of_edges(),
@@ -146,10 +147,10 @@ def graph(ctx, viz_path, top):
     }, indent=2))
 
 
-def _write_viz(conn, path: str) -> None:
+def _write_viz(conn, path: str, *, include_derived: bool = True) -> None:
     from pyvis.network import Network
     from . import graph as g
-    G = g.build_graph(conn)
+    G = g.build_graph(conn, include_derived=include_derived)
     ranks = {r["place_key"]: r["score"] for r in g.pagerank(conn, k=10**6)}
     comms = g.communities(conn)
     comm_of = {key: i for i, c in enumerate(comms) for key in c}

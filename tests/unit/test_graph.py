@@ -53,6 +53,36 @@ def test_two_clusters_split_into_two_communities(tmp_path):
     assert grouped == [["pid:a", "pid:b", "pid:c"], ["pid:x", "pid:y", "pid:z"]]
 
 
+def test_covisit_edges_within_window(tmp_path):
+    conn = _conn(tmp_path)
+    for k in ("pid:a", "pid:b", "pid:c"):
+        upsert_place(conn, k, name=k, source="review")
+    conn.execute("INSERT INTO reviews(place_key,rating,text,reviewed_at) "
+                 "VALUES (?,?,?,?)", ("pid:a", 5, "x", "2023-06-10T12:00:00Z"))
+    conn.execute("INSERT INTO reviews(place_key,rating,text,reviewed_at) "
+                 "VALUES (?,?,?,?)", ("pid:b", 5, "x", "2023-06-10T18:00:00Z"))
+    conn.execute("INSERT INTO reviews(place_key,rating,text,reviewed_at) "
+                 "VALUES (?,?,?,?)", ("pid:c", 5, "x", "2023-06-15T18:00:00Z"))
+    conn.commit()
+    G = build_graph(conn, include_derived=True)
+    co_edges = [(u, v) for u, v, d in G.edges(data=True) if d.get("kind") == "co_visit"]
+    assert ("pid:a", "pid:b") in co_edges or ("pid:b", "pid:a") in co_edges
+    assert all("pid:c" not in pair for pair in co_edges)
+
+
+def test_no_derived_flag_returns_transitions_only(tmp_path):
+    conn = _conn(tmp_path)
+    for k in ("pid:a", "pid:b"):
+        upsert_place(conn, k, name=k, source="review")
+    conn.execute("INSERT INTO reviews(place_key,rating,text,reviewed_at) "
+                 "VALUES (?,?,?,?)", ("pid:a", 5, "x", "2023-06-10T12:00:00Z"))
+    conn.execute("INSERT INTO reviews(place_key,rating,text,reviewed_at) "
+                 "VALUES (?,?,?,?)", ("pid:b", 5, "x", "2023-06-10T18:00:00Z"))
+    conn.commit()
+    G = build_graph(conn, include_derived=False)
+    assert G.number_of_edges() == 0
+
+
 def test_expand_hops_respects_cutoff(tmp_path):
     conn = _conn(tmp_path)
     for k in ("pid:a", "pid:b", "pid:c", "pid:d"):
