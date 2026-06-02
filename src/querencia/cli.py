@@ -111,9 +111,9 @@ def trips(ctx, rebuild):
 @click.option("--json", "as_json", is_flag=True)
 @click.pass_context
 def recommend(ctx, city, top, as_json):
-    from .embed import Embedder
+    from .embed import LazyEmbedder
     from .taste import recommend as _recommend
-    results = _recommend(ctx.obj["conn"], Embedder(), city, top=top)
+    results = _recommend(ctx.obj["conn"], LazyEmbedder(), city, top=top)
     if as_json or not results:
         click.echo(json.dumps(results, indent=2))
         return

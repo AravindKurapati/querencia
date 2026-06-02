@@ -41,13 +41,13 @@ def _trips_tool(conn, rebuild=False) -> list[dict]:
 
 
 def _recommend_tool(conn, city, top=5) -> list[dict]:
-    from .embed import Embedder
+    from .embed import LazyEmbedder
     from .taste import PlacesClient, recommend
     try:
         client = PlacesClient()
     except KeyError:
         client = None
-    return recommend(conn, Embedder(), city, client=client, top=top)
+    return recommend(conn, LazyEmbedder(), city, client=client, top=top)
 
 
 mcp = FastMCP("querencia")

@@ -97,3 +97,50 @@ def test_recommend_with_no_client_and_no_cache_returns_empty(tmp_path):
     conn = connect(tmp_path / "t.db"); init_schema(conn); _seed(conn, embedder)
     out = recommend(conn, embedder, "Rome", client=None, top=5)
     assert out == []
+
+
+def test_recommend_does_not_load_embedder_when_no_candidates(tmp_path):
+    # The no-API-key / no-candidate path returns [] without ever encoding, so a
+    # LazyEmbedder must stay unloaded — this is what keeps `recommend` offline
+    # and is why the recommend entry points pass a LazyEmbedder, not Embedder.
+    from querencia.embed import LazyEmbedder
+
+    seed_embedder = FakeEmbedder({"Pasta": [1.0] * 8, "Pizza": [1.0] * 8})
+    conn = connect(tmp_path / "t.db"); init_schema(conn); _seed(conn, seed_embedder)
+
+    def explode():
+        raise AssertionError("embedder must not be constructed with no candidates")
+
+    lazy = LazyEmbedder(factory=explode)
+    out = recommend(conn, lazy, "Rome", client=None, top=5)
+    assert out == []
+    assert lazy.loaded is False
+
+
+def test_recommend_loads_embedder_lazily_when_scoring(tmp_path):
+    # With candidates present, the LazyEmbedder is constructed exactly once and
+    # ranking still works — proving lazy wiring is transparent to real scoring.
+    from querencia.embed import LazyEmbedder
+
+    mapping = {
+        "Pasta": [1.0] * 8, "Pizza": [1.0] * 8, "Burger": [0.0] * 8,
+        "Trattoria": [1.0] * 8, "Drive-Thru": [0.0] * 8,
+    }
+    conn = connect(tmp_path / "t.db"); init_schema(conn)
+    _seed(conn, FakeEmbedder(mapping))
+
+    builds = {"n": 0}
+
+    def factory():
+        builds["n"] += 1
+        return FakeEmbedder(mapping)
+
+    lazy = LazyEmbedder(factory=factory)
+    client = FakePlacesClient({"restaurant": [
+        {"name": "Drive-Thru", "category": "restaurant", "address": "x"},
+        {"name": "Trattoria", "category": "restaurant", "address": "y"},
+    ]})
+    out = recommend(conn, lazy, "Rome", client=client, top=2)
+    assert out[0]["name"] == "Trattoria"
+    assert lazy.loaded is True
+    assert builds["n"] == 1

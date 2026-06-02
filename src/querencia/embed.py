@@ -14,6 +14,35 @@ class Embedder:
         return self._model.encode(text, normalize_embeddings=True).tolist()
 
 
+class LazyEmbedder:
+    """Defers building the underlying model until the first ``encode`` call.
+
+    Constructing an :class:`Embedder` loads a ~130 MB sentence-transformers
+    model (downloading it on first use). Some entry points — notably
+    ``recommend`` — wire an embedder in unconditionally but only touch it when
+    there are candidates to score; in the common no-API-key / no-candidate path
+    they return early without ever encoding. Wrapping construction this way
+    keeps that path fast and fully offline while staying a drop-in for
+    :class:`Embedder` (same ``dim`` and ``encode`` surface).
+    """
+
+    dim = Embedder.dim
+
+    def __init__(self, factory=Embedder):
+        self._factory = factory
+        self._delegate = None
+
+    @property
+    def loaded(self) -> bool:
+        """True once the underlying embedder has been constructed."""
+        return self._delegate is not None
+
+    def encode(self, text: str) -> list[float]:
+        if self._delegate is None:
+            self._delegate = self._factory()
+        return self._delegate.encode(text)
+
+
 def render_place(conn: sqlite3.Connection, place_key: str) -> str:
     p = conn.execute(
         "SELECT canonical_name, category, address, country_code "
