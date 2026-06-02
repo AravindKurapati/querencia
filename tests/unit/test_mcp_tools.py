@@ -1,3 +1,8 @@
+import sqlite3
+
+import pytest
+
+import querencia.mcp_server as mcp_server
 from querencia.db import connect, init_schema
 from querencia.ingest._util import upsert_place
 from querencia.mcp_server import (
@@ -93,3 +98,59 @@ def test_mcp_registry_contains_new_tools():
     names = {t.name for t in tools}
     assert "querencia_trips" in names
     assert "querencia_recommend" in names
+
+
+def _assert_closed(conn: sqlite3.Connection) -> None:
+    with pytest.raises(sqlite3.ProgrammingError):
+        conn.execute("SELECT 1")
+
+
+def test_conn_context_manager_closes_connection(tmp_path, monkeypatch):
+    db = tmp_path / "t.db"
+    monkeypatch.setattr(mcp_server, "DB_PATH", str(db))
+    with mcp_server._conn() as conn:
+        # Schema is initialized inside the context manager.
+        assert conn.execute("SELECT COUNT(*) FROM places").fetchone()[0] == 0
+    _assert_closed(conn)
+
+
+def test_conn_context_manager_closes_on_exception(tmp_path, monkeypatch):
+    db = tmp_path / "t.db"
+    monkeypatch.setattr(mcp_server, "DB_PATH", str(db))
+    captured = {}
+    with pytest.raises(RuntimeError):
+        with mcp_server._conn() as conn:
+            captured["conn"] = conn
+            raise RuntimeError("boom")
+    _assert_closed(captured["conn"])
+
+
+def test_tool_wrappers_close_their_connections(tmp_path, monkeypatch):
+    # Each MCP tool invocation must close the connection it opens, or a
+    # long-lived server leaks one connection per call.
+    db = tmp_path / "t.db"
+    seed = connect(db); init_schema(seed)
+    upsert_place(seed, "pid:a", name="Cafe", source="review")
+    seed.execute("UPDATE places SET category='cafe' WHERE place_key='pid:a'")
+    seed.execute("INSERT INTO reviews(place_key,rating,text) VALUES ('pid:a',5,'nice')")
+    seed.commit(); seed.close()
+
+    opened: list[sqlite3.Connection] = []
+    real_connect = mcp_server.connect
+
+    def spy_connect(path):
+        conn = real_connect(path)
+        opened.append(conn)
+        return conn
+
+    monkeypatch.setattr(mcp_server, "connect", spy_connect)
+    monkeypatch.setattr(mcp_server, "DB_PATH", str(db))
+
+    assert mcp_server.querencia_narrative(theme="food")["place_count"] == 1
+    assert mcp_server.querencia_patterns(kind="categories")["cafe"] == 1
+    assert mcp_server.querencia_taste(city="Rome")["city"] == "Rome"
+    assert mcp_server.querencia_trips() == []
+
+    assert len(opened) == 4
+    for conn in opened:
+        _assert_closed(conn)
