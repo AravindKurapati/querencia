@@ -15,8 +15,8 @@ def _get_conn() -> sqlite3.Connection:
     return conn
 
 
-def _narrative_tool(conn, theme=None, year=None) -> dict:
-    return query.narrative(conn, theme=theme, year=year)
+def _narrative_tool(conn, theme=None, year=None, trip_id=None) -> dict:
+    return query.narrative(conn, theme=theme, year=year, trip_id=trip_id)
 
 
 def _patterns_tool(conn, kind="categories") -> dict:
@@ -54,9 +54,17 @@ mcp = FastMCP("querencia")
 
 
 @mcp.tool()
-def querencia_narrative(theme: str | None = None, year: int | None = None) -> dict:
-    """Structured summary of reviewed places, optionally filtered by theme/year."""
-    return _narrative_tool(_get_conn(), theme=theme, year=year)
+def querencia_narrative(
+    theme: str | None = None,
+    year: int | None = None,
+    trip_id: int | None = None,
+) -> dict:
+    """Structured summary of reviewed places, optionally filtered by theme/year/trip.
+
+    Pass ``trip_id`` (from ``querencia_trips``) to scope the narrative to a single
+    detected trip — see RECIPES.md Recipe 1.
+    """
+    return _narrative_tool(_get_conn(), theme=theme, year=year, trip_id=trip_id)
 
 
 @mcp.tool()

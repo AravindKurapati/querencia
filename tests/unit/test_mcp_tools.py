@@ -14,6 +14,36 @@ def test_narrative_tool_returns_dict(tmp_path):
     assert out["place_count"] == 1
 
 
+def test_narrative_tool_scopes_to_trip(tmp_path):
+    # RECIPES.md Recipe 1 calls querencia_narrative(trip_id=N) after querencia_trips;
+    # the MCP narrative tool must accept and honor trip_id, not just theme/year.
+    conn = connect(tmp_path / "t.db"); init_schema(conn)
+    # Two reviewed places; only one belongs to the trip.
+    upsert_place(conn, "pid:in", name="On Trip", source="review")
+    upsert_place(conn, "pid:out", name="Off Trip", source="review")
+    conn.execute("INSERT INTO reviews(place_key,rating,text) VALUES ('pid:in',5,'a')")
+    conn.execute("INSERT INTO reviews(place_key,rating,text) VALUES ('pid:out',5,'b')")
+    conn.execute("INSERT INTO trips(trip_id,place_count) VALUES (7,1)")
+    conn.execute("INSERT INTO trip_places(trip_id,place_key) VALUES (7,'pid:in')")
+    conn.commit()
+
+    scoped = _narrative_tool(conn, trip_id=7)
+    assert scoped["trip_id"] == 7
+    assert scoped["place_count"] == 1
+    assert {p["name"] for p in scoped["top_rated"]} == {"On Trip"}
+
+    # Unscoped still sees both, proving the filter is what narrowed it.
+    assert _narrative_tool(conn)["place_count"] == 2
+
+
+def test_narrative_mcp_tool_exposes_trip_id():
+    # The registered MCP tool's schema must advertise trip_id so clients can call it.
+    import asyncio
+    tools = asyncio.run(mcp.list_tools())
+    narrative = next(t for t in tools if t.name == "querencia_narrative")
+    assert "trip_id" in narrative.inputSchema.get("properties", {})
+
+
 def test_patterns_tool_returns_counts(tmp_path):
     conn = connect(tmp_path / "t.db"); init_schema(conn)
     upsert_place(conn, "pid:a", name="Cafe", source="review")
