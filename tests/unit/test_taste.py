@@ -3,7 +3,12 @@ import json
 from querencia.db import connect, init_schema
 from querencia.embed import build_index
 from querencia.ingest._util import upsert_place
-from querencia.taste import fetch_candidates, preference_vector, recommend
+from querencia.taste import (
+    _cosine,
+    fetch_candidates,
+    preference_vector,
+    recommend,
+)
 
 
 def _pad(v):
@@ -97,6 +102,63 @@ def test_recommend_with_no_client_and_no_cache_returns_empty(tmp_path):
     conn = connect(tmp_path / "t.db"); init_schema(conn); _seed(conn, embedder)
     out = recommend(conn, embedder, "Rome", client=None, top=5)
     assert out == []
+
+
+def test_recommend_falls_back_to_db_candidates_by_country(tmp_path):
+    # No client, no cache: the documented same-country in-DB fallback kicks in
+    # when a country_code is supplied, so the offline path still returns places.
+    embedder = FakeEmbedder({
+        "Pasta": [1.0] * 8, "Pizza": [1.0] * 8, "Burger": [0.0] * 8,
+    })
+    conn = connect(tmp_path / "t.db"); init_schema(conn); _seed(conn, embedder)
+    out = recommend(conn, embedder, "Boston", client=None, top=5, country_code="US")
+    assert out, "expected the in-DB country fallback to yield candidates"
+    assert all(r["source"] == "db_fallback" for r in out)
+    assert "Pasta House" in {r["name"] for r in out}
+    # Burger Chain encodes to the zero vector => ranks below the italian spots.
+    assert out[0]["name"] in {"Pasta House", "Pizza Place"}
+
+
+def test_recommend_fallback_skipped_when_country_unknown(tmp_path):
+    embedder = FakeEmbedder({"Pasta": [1.0] * 8, "Pizza": [1.0] * 8})
+    conn = connect(tmp_path / "t.db"); init_schema(conn); _seed(conn, embedder)
+    # Same country exists in-DB, but without country_code the fallback can't fire.
+    out = recommend(conn, embedder, "Boston", client=None, top=5)
+    assert out == []
+
+
+def test_fetch_candidates_swallows_client_errors(tmp_path):
+    class RaisingClient:
+        def places_nearby(self, *, city, category):
+            raise RuntimeError("places API down")
+
+    embedder = FakeEmbedder({})
+    conn = connect(tmp_path / "t.db"); init_schema(conn); _seed(conn, embedder)
+    cands = fetch_candidates(conn, "Rome", ["restaurant"], client=RaisingClient())
+    assert cands == []
+    # The empty result is still cached so a flapping API isn't retried every call.
+    row = conn.execute(
+        "SELECT payload FROM candidate_cache WHERE city='Rome' AND category='restaurant'"
+    ).fetchone()
+    assert row is not None and json.loads(row[0]) == []
+
+
+def test_recommend_skips_candidates_with_no_text(tmp_path):
+    embedder = FakeEmbedder({"Pasta": [1.0] * 8, "Pizza": [1.0] * 8})
+    conn = connect(tmp_path / "t.db"); init_schema(conn); _seed(conn, embedder)
+    client = FakePlacesClient({"restaurant": [
+        {},  # no name/category/address => empty rendered text => skipped
+        {"name": "Pasta Spot", "category": "restaurant", "address": "z"},
+    ]})
+    out = recommend(conn, embedder, "Rome", client=client, top=5)
+    assert [r["name"] for r in out] == ["Pasta Spot"]
+
+
+def test_cosine_handles_degenerate_inputs():
+    assert _cosine([], [1.0]) == 0.0           # empty operand
+    assert _cosine([1.0, 2.0], [1.0]) == 0.0   # length mismatch
+    assert _cosine([0.0, 0.0], [1.0, 1.0]) == 0.0  # zero magnitude
+    assert _cosine([1.0, 0.0], [1.0, 0.0]) == 1.0  # identical direction
 
 
 def test_recommend_does_not_load_embedder_when_no_candidates(tmp_path):
