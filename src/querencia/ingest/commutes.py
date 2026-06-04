@@ -19,8 +19,8 @@ def ingest_commutes(conn: sqlite3.Connection, data: dict) -> int:
                 upsert_place(conn, k, source="commute")
             keys[pv["id"]] = k
         for tr in trip.get("transition", []):
-            o = tr.get("origin", {}).get("visit_id")
-            d = tr.get("destination", {}).get("visit_id")
+            o = (tr.get("origin") or {}).get("visit_id")
+            d = (tr.get("destination") or {}).get("visit_id")
             mode = (tr.get("route") or {}).get("travel_mode", "UNKNOWN")
             if o in keys and d in keys:
                 conn.execute(

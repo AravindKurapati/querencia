@@ -20,8 +20,11 @@ def _place_key(props: dict, geom: dict) -> str:
 def ingest_reviews(conn: sqlite3.Connection, data: dict) -> int:
     count = 0
     for feat in data.get("features", []):
-        props = feat.get("properties", {})
-        geom = feat.get("geometry", {})
+        # Takeout emits explicit `null` (not just missing keys) for the geometry
+        # of location-less reviews and occasionally for properties; `or {}`
+        # guards both, matching the defensiveness already in `_place_key`.
+        props = feat.get("properties") or {}
+        geom = feat.get("geometry") or {}
         loc = props.get("location") or {}
         coords = geom.get("coordinates") or [None, None]
         lat = coords[1] if len(coords) == 2 else None
