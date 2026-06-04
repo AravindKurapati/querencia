@@ -41,13 +41,14 @@ def _trips_tool(conn, rebuild=False) -> list[dict]:
 
 
 def _recommend_tool(conn, city, top=5) -> list[dict]:
-    from .embed import Embedder
     from .taste import PlacesClient, recommend
     try:
         client = PlacesClient()
     except KeyError:
         client = None
-    return recommend(conn, Embedder(), city, client=client, top=top)
+    # embedder is built lazily inside recommend() only if there are candidates
+    # to score, so the no-key / no-candidate path stays model-free.
+    return recommend(conn, None, city, client=client, top=top)
 
 
 mcp = FastMCP("querencia")

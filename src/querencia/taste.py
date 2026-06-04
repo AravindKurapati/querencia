@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import math
-import os
 import pickle
 import sqlite3
 from collections import Counter
@@ -143,7 +142,12 @@ def recommend(
     top: int = 10,
     country_code: str | None = None,
 ) -> list[dict]:
-    """Return ranked candidate places in `city` against the user's preference vector."""
+    """Return ranked candidate places in `city` against the user's preference vector.
+
+    `embedder` may be None: a default `Embedder` is built lazily only when there
+    is at least one candidate to score. The no-API-key / no-candidate path thus
+    returns [] without loading the (heavy) embedding model.
+    """
     prefs = preference_vector(conn)
     if "__global__" not in prefs:
         return []
@@ -156,6 +160,8 @@ def recommend(
     candidates = fetch_candidates(conn, city, top_cats, client=client)
     if not candidates and country_code:
         candidates = _fallback_candidates(conn, country_code, top_cats)
+    if not candidates:
+        return []
     ranked: list[dict] = []
     for cand in candidates:
         text = " | ".join(filter(None, [
@@ -163,6 +169,9 @@ def recommend(
         ]))
         if not text:
             continue
+        if embedder is None:
+            from .embed import Embedder
+            embedder = Embedder()
         vec = embedder.encode(text)
         cat = cand.get("category")
         pref = prefs.get(cat) or prefs["__global__"]
@@ -182,8 +191,10 @@ class PlacesClient:
     """Thin wrapper over googlemaps client for `places_nearby` text search."""
 
     def __init__(self, api_key: str | None = None):
+        from ._keys import require_env_key
+        key = require_env_key("GOOGLE_PLACES_API_KEY", api_key)
         import googlemaps
-        self._gm = googlemaps.Client(key=api_key or os.environ["GOOGLE_PLACES_API_KEY"])
+        self._gm = googlemaps.Client(key=key)
 
     def places_nearby(self, *, city: str, category: str) -> list[dict]:
         res = self._gm.places(query=f"{category} in {city}")

@@ -1,12 +1,13 @@
 import json
-import os
 
 MODEL = "claude-sonnet-4-6"
 
 
 def make_client(api_key: str | None = None):
+    from ._keys import require_env_key
+    key = require_env_key("ANTHROPIC_API_KEY", api_key)
     import anthropic
-    return anthropic.Anthropic(api_key=api_key or os.environ["ANTHROPIC_API_KEY"])
+    return anthropic.Anthropic(api_key=key)
 
 
 def render_prose(client, instruction: str, payload: dict) -> str:

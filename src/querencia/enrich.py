@@ -1,4 +1,3 @@
-import os
 import sqlite3
 from datetime import datetime, timezone
 
@@ -7,8 +6,10 @@ class GoogleClient:
     """Thin wrapper over googlemaps; only used in production, never in tests."""
 
     def __init__(self, api_key: str | None = None):
+        from ._keys import require_env_key
+        key = require_env_key("GOOGLE_PLACES_API_KEY", api_key)
         import googlemaps
-        self._gm = googlemaps.Client(key=api_key or os.environ["GOOGLE_PLACES_API_KEY"])
+        self._gm = googlemaps.Client(key=key)
 
     def reverse_geocode(self, lat: float, lng: float) -> dict | None:
         res = self._gm.reverse_geocode((lat, lng))

@@ -97,3 +97,30 @@ def test_recommend_with_no_client_and_no_cache_returns_empty(tmp_path):
     conn = connect(tmp_path / "t.db"); init_schema(conn); _seed(conn, embedder)
     out = recommend(conn, embedder, "Rome", client=None, top=5)
     assert out == []
+
+
+def test_recommend_no_candidates_never_builds_embedder(tmp_path):
+    # embedder=None + no candidates must short-circuit WITHOUT constructing a
+    # default Embedder (which would load a heavy model / fail offline). A real
+    # build would raise here; reaching [] proves the lazy path stays model-free.
+    embedder = FakeEmbedder({"Pasta": [1.0] * 8, "Pizza": [1.0] * 8})
+    conn = connect(tmp_path / "t.db"); init_schema(conn); _seed(conn, embedder)
+    out = recommend(conn, None, "Rome", client=None, top=5)
+    assert out == []
+
+
+def test_recommend_falls_back_to_db_candidates_by_country(tmp_path):
+    # The documented offline fallback: with no client but a country_code, rank
+    # the user's own in-DB places from that country. Previously unreachable from
+    # any caller, so never exercised.
+    embedder = FakeEmbedder({
+        "Pasta": [1.0] * 8, "Pizza": [1.0] * 8, "Burger": [0.0] * 8,
+    })
+    conn = connect(tmp_path / "t.db"); init_schema(conn); _seed(conn, embedder)
+    # _seed already sets canonical_name + category + country_code on each place,
+    # which is all _fallback_candidates needs.
+    out = recommend(conn, embedder, "Anytown", client=None, country_code="US", top=5)
+    assert out, "expected DB-fallback candidates from country US"
+    assert all(r["source"] == "db_fallback" for r in out)
+    # Italian-leaning prefs should rank Pasta/Pizza above the disliked Burger.
+    assert out[0]["name"] in ("Pasta House", "Pizza Place")
